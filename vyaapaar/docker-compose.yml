@@ -1,0 +1,60 @@
+services:
+
+  web:
+
+    build: .
+
+    command: python manage.py runserver 0.0.0.0:8000
+
+    volumes:
+      - .:/app
+
+    ports:
+      - "8000:8000"
+
+    depends_on:
+      - db
+
+    environment:
+      - DB_NAME=ecommerce_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+
+  db:
+
+    image: postgres:16
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+    environment:
+      - POSTGRES_DB=ecommerce_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  redis:
+
+    image: redis:7
+
+    ports:
+    - "6379:6379" 
+
+
+  worker:
+
+     build: .
+
+     command: celery -A vyaapaar worker -l info
+
+     volumes:
+      - .:/app
+
+     depends_on:
+       - redis
+       - db     
+
+volumes:
+
+  postgres_data:

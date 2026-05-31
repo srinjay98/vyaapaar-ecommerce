@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>
+
+    Seller Orders
+
+</h2>
+
+<table class="table">
+
+    <tr>
+
+        <th>Product</th>
+
+        <th>Buyer</th>
+
+        <th>Quantity</th>
+
+        <th>Status</th>
+
+        <th>Action</th>
+
+    </tr>
+
+    {% for item in order_items %}
+
+    <tr>
+
+        <td>
+
+            {{ item.product.name }}
+
+        </td>
+
+        <td>
+
+            {{ item.order.buyer.username }}
+
+        </td>
+
+        <td>
+
+            {{ item.quantity }}
+
+        </td>
+
+        <td>
+
+            {{ item.order.status }}
+
+        </td>
+
+        <td>
+
+        {% if item.order.status != 'delivered' %}
+
+            <a href="{% url 'update_order_status' item.order.id %}"
+               class="btn btn-sm btn-success">
+
+                Update Status
+
+            </a>
+
+        {% else %}
+
+            Completed
+
+        {% endif %}
+
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+{% endblock %}

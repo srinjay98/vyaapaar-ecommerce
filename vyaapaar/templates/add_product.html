@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">
+
+    Add Product
+
+</h2>
+
+<form method="POST"
+      enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <h4 class="mt-4">
+
+        Upload Product Image
+
+    </h4>
+
+    {{ image_form.as_p }}
+
+    <button type="submit"
+            class="btn btn-success">
+
+        Add Product
+
+    </button>
+
+</form>
+
+{% endblock %}
+
+
+{% comment %} enctype="multipart/form-data"
+Without it:
+image upload will fail {% endcomment %}

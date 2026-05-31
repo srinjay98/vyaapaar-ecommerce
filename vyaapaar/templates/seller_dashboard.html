@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">
+
+    Seller Dashboard
+
+</h2>
+
+<a href="{% url 'add_product' %}"
+   class="btn btn-success mb-4">
+
+    Add Product
+
+</a>
+
+<!-- ADD ANALYTICS HERE -->
+
+<div class="row mb-4">
+
+    <div class="col-md-4">
+
+        <div class="card shadow text-center">
+
+            <div class="card-body">
+
+                <h3>{{ total_products }}</h3>
+
+                <p>Total Products</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card shadow text-center">
+
+            <div class="card-body">
+
+                <h3>{{ total_orders }}</h3>
+
+                <p>Total Orders</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card shadow text-center">
+
+            <div class="card-body">
+
+                <h3>₹{{ total_revenue }}</h3>
+
+                <p>Total Revenue</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row">
+
+    {% for product in products %}
+
+    <div class="col-md-4 mb-4">
+
+        <div class="card shadow h-100">
+
+            {% if product.images.first %}
+
+            <img
+                src="{{ product.images.first.image.url }}"
+                class="card-img-top"
+                style="height: 250px; object-fit: cover"
+            />
+
+            {% endif %}
+
+            <div class="card-body">
+
+                <h5>
+
+                    {{ product.name }}
+
+                </h5>
+
+                <p>
+
+                    ₹{{ product.price }}
+
+                </p>
+
+                <p>
+
+                    Stock: {{ product.stock }}
+
+                </p>
+
+                <a href="{% url 'edit_product' product.id %}"
+                   class="btn btn-warning w-100 mb-2">
+
+                    Edit
+
+                </a>
+
+                <a href="{% url 'delete_product' product.id %}"
+                   class="btn btn-danger w-100">
+
+                    Delete
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <h4>No products added yet</h4>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow p-5 text-center">
+
+        <h2 class="mb-4">
+
+            Complete Payment
+
+        </h2>
+
+        <h4 class="mb-4">
+
+            Order #{{ order.id }}
+
+        </h4>
+
+        <button
+            id="pay-btn"
+            class="btn btn-success btn-lg"
+        >
+
+            Pay Now
+
+        </button>
+
+    </div>
+
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const payBtn = document.getElementById("pay-btn");
+
+    payBtn.addEventListener("click", async function () {
+        console.log("TOKEN:", "{{ token }}")
+
+        console.log(
+                    "Authorization Header:",
+                    "Bearer {{ token }}"
+        );
+
+        try {
+            
+
+            const response = await fetch(
+                "/api/orders/create-payment/{{ order.id }}/",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer {{ token }}"
+                    }
+                }
+            );
+
+            console.log(response); 
+
+            console.log("STATUS:", response.status);
+
+            const data = await response.json();
+
+            console.log("FULL RESPONSE:", data);
+
+            console.log(data);
+
+            const options = {
+
+                key: data.key,
+
+                amount: data.amount,
+
+                currency: "INR",
+
+                name: "ApnaCart",
+
+                description: "Order Payment",
+
+                order_id: data.razorpay_order_id,
+
+                handler: async function (response) {
+
+                    await fetch(
+                        "/api/orders/verify-payment/",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization":
+                                    "Bearer {{ token }}"
+                            },
+
+                            body: JSON.stringify({
+
+                                razorpay_order_id:
+                                    data.razorpay_order_id,
+
+                                razorpay_payment_id:
+                                    response.razorpay_payment_id,
+
+                                razorpay_signature:
+                                    response.razorpay_signature
+                            })
+                        }
+                    );
+
+                    alert("Payment Successful");
+
+                    window.location.href = "/orders/";
+                }
+            };
+
+            const rzp = new Razorpay(options);
+
+            rzp.open();
+
+        } catch (error) {
+
+            console.error(error);
+        }
+    });
+});
+
+</script>
+
+{% endblock %}

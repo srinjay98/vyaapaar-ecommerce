@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">
+
+    Your Cart
+
+</h2>
+
+{% for item in cart_items %}
+
+<div class="card mb-3 shadow-sm">
+
+    <div class="card-body">
+
+        <h5>
+
+            {{ item.product.name }}
+
+        </h5>
+
+        <p>
+
+            Price: ₹{{ item.product.price }}
+
+        </p>
+
+        <p>
+
+            Quantity: {{ item.quantity }}
+
+        </p>
+
+        <p>
+
+            Subtotal: ₹{{ item.subtotal }}
+
+        </p>
+
+    </div>
+
+</div>
+
+{% empty %}
+
+<h4>
+
+    Cart is empty
+
+</h4>
+
+{% endfor %}
+
+<form method="POST"
+      action="{% url 'apply_coupon' %}"
+      class="mb-3">
+
+    {% csrf_token %}
+
+    <div class="input-group">
+
+        <input
+            type="text"
+            name="coupon_code"
+            class="form-control"
+            placeholder="Enter Coupon Code"
+        >
+
+        <button
+            type="submit"
+            class="btn btn-success">
+
+            Apply Coupon
+
+        </button>
+
+    </div>
+
+</form>
+<hr>
+
+<h4>
+
+    Total: ₹{{ total_price }}
+
+</h4>
+
+{% if coupon %}
+
+<p class="text-success">
+
+    Coupon Applied:
+    {{ coupon.code }}
+
+</p>
+
+<p>
+
+    Discount:
+    ₹{{ discount }}
+
+</p>
+
+<h3>
+
+    Final Total:
+    ₹{{ final_price }}
+
+</h3>
+
+{% endif %}
+<a href="{% url 'checkout' %}"
+   class="btn btn-primary mt-3">
+
+    Proceed To Checkout
+
+</a>
+{% endblock %}
