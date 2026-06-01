@@ -2662,4 +2662,7 @@ Only Django website + PostgreSQL
 
 push your project to git
 
+then open render
+GitHub → Settings → Applications → Installed GitHub Apps → Render
+
 
