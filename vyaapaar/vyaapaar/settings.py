@@ -113,11 +113,27 @@ WSGI_APPLICATION = 'vyaapaar.wsgi.application'
 
 
 
-DATABASES = {
-    'default': dj_database_url.parse(
-        env('DATABASE_URL')
-    )
-}
+
+if env('DATABASE_URL', default=None):
+
+    DATABASES = {
+        'default': dj_database_url.parse(
+            env('DATABASE_URL')
+        )
+    }
+
+else:
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_NAME'),
+            'USER': env('DB_USER'),
+            'PASSWORD': env('DB_PASSWORD'),
+            'HOST': env('DB_HOST'),
+            'PORT': env('DB_PORT'),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
