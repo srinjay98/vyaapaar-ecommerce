@@ -28,7 +28,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 env = environ.Env()
 
-environ.Env.read_env(BASE_DIR / ".env")
+env_file = BASE_DIR / ".env"
+
+if env_file.exists():
+    environ.Env.read_env(env_file)
 
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env.bool("DEBUG")
@@ -113,15 +116,15 @@ WSGI_APPLICATION = 'vyaapaar.wsgi.application'
 # }
 
 
-
+print("DATABASE_URL =", repr(env('DATABASE_URL', default=None)))
 
 if env('DATABASE_URL', default=None):
 
     DATABASES = {
-        'default': dj_database_url.parse(
-            env('DATABASE_URL')
-        )
-    }
+    "default": dj_database_url.parse(
+        os.environ.get("DATABASE_URL")
+    )
+}
 
 else:
 
