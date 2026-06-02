@@ -290,42 +290,61 @@ def register_view(request):
         context
     )
 
+import requests
+
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+
 
 def login_view(request):
 
-    if request.method == 'POST':
+    if request.method == "POST":
 
-        username = request.POST.get('username')
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-        password = request.POST.get('password')
+        try:
+            response = requests.post(
+                "https://vyaapaar-ecommerce.onrender.com/api/accounts/login/",
+                json={
+                    "username": username,
+                    "password": password
+                },
+                timeout=10
+            )
 
-        response = requests.post(
+            print("STATUS:", response.status_code)
+            print("TEXT:", response.text)
 
-            'http://127.0.0.1:8000/api/accounts/login/',
+        except Exception as e:
+            print("ERROR:", str(e))
+            return render(
+                request,
+                "login.html",
+                {
+                    "error": f"Request failed: {e}"
+                }
+            )
 
-            json={
+        try:
+            data = response.json()
 
-                'username': username,
+        except Exception as e:
+            print("JSON ERROR:", str(e))
+            print("RESPONSE TEXT:", response.text)
 
-                'password': password
-            }
-        )
-
-        print(response.status_code)
-
-        print(response.text)
-
-        data = response.json()
+            return render(
+                request,
+                "login.html",
+                {
+                    "error": "Invalid response from login API."
+                }
+            )
 
         if response.status_code == 200:
 
-            request.session['access'] = (
-                data['access']
-            )
-
-            request.session['refresh'] = (
-                data['refresh']
-            )
+            request.session["access"] = data["access"]
+            request.session["refresh"] = data["refresh"]
 
             user = authenticate(
                 request,
@@ -334,14 +353,24 @@ def login_view(request):
             )
 
             if user is not None:
-
                 login(request, user)
 
-            return redirect('home')
+            return redirect("home")
+
+        return render(
+            request,
+            "login.html",
+            {
+                "error": data.get(
+                    "detail",
+                    "Invalid username or password."
+                )
+            }
+        )
 
     return render(
         request,
-        'login.html'
+        "login.html"
     )
 
 
