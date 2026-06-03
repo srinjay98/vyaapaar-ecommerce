@@ -24,7 +24,7 @@ from .forms import (
 from django.db.models import Sum, Count
 
 from decimal import Decimal
-
+from rest_framework_simplejwt.tokens import RefreshToken
 
 def home(request):
 
@@ -290,11 +290,6 @@ def register_view(request):
         context
     )
 
-import requests
-
-from django.contrib.auth import authenticate, login
-from django.shortcuts import render, redirect
-
 
 def login_view(request):
 
@@ -303,57 +298,25 @@ def login_view(request):
         username = request.POST.get("username")
         password = request.POST.get("password")
 
-        try:
-            response = requests.post(
-                "https://vyaapaar-ecommerce.onrender.com/api/accounts/login/",
-                json={
-                    "username": username,
-                    "password": password
-                },
-                timeout=10
+        user = authenticate(
+            request,
+            username=username,
+            password=password
+        )
+
+        if user is not None:
+
+            refresh = RefreshToken.for_user(user)
+
+            request.session["access"] = str(
+                refresh.access_token
             )
 
-            print("STATUS:", response.status_code)
-            print("TEXT:", response.text)
-
-        except Exception as e:
-            print("ERROR:", str(e))
-            return render(
-                request,
-                "login.html",
-                {
-                    "error": f"Request failed: {e}"
-                }
+            request.session["refresh"] = str(
+                refresh
             )
 
-        try:
-            data = response.json()
-
-        except Exception as e:
-            print("JSON ERROR:", str(e))
-            print("RESPONSE TEXT:", response.text)
-
-            return render(
-                request,
-                "login.html",
-                {
-                    "error": "Invalid response from login API."
-                }
-            )
-
-        if response.status_code == 200:
-
-            request.session["access"] = data["access"]
-            request.session["refresh"] = data["refresh"]
-
-            user = authenticate(
-                request,
-                username=username,
-                password=password
-            )
-
-            if user is not None:
-                login(request, user)
+            login(request, user)
 
             return redirect("home")
 
@@ -361,10 +324,7 @@ def login_view(request):
             request,
             "login.html",
             {
-                "error": data.get(
-                    "detail",
-                    "Invalid username or password."
-                )
+                "error": "Invalid username or password"
             }
         )
 

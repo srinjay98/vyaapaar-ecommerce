@@ -40,8 +40,9 @@ DEBUG = env.bool("DEBUG")
 
 ALLOWED_HOSTS = [
     '.onrender.com',
+    '127.0.0.1',
+    'localhost',
 ]
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -249,4 +250,6 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': env('CLOUDINARY_API_SECRET'),
 }
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+DEFAULT_FILE_STORAGE = (
+    'cloudinary_storage.storage.MediaCloudinaryStorage'
+)
